@@ -1,0 +1,98 @@
+$def with (form, series)
+<!DOCTYPE link PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<style>
+header{
+	background-color:red;
+	margin-bottom:20px;
+	color:white;
+	padding: 10px;
+}
+form * {
+	margin: 5px;
+}
+form{
+border: 1px inset #4d4d4d;
+padding: 10px;
+}
+.error, .wrong{
+	color: red;
+}
+
+#grafico{
+-webkit-box-shadow: 8px 8px 5px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 8px 8px 5px 0px rgba(0,0,0,0.75);
+box-shadow: 8px 8px 5px 0px rgba(0,0,0,0.75);
+border-radius: 5px 5px 5px 5px;
+-moz-border-radius: 5px 5px 5px 5px;
+-webkit-border-radius: 5px 5px 5px 5px;
+border: 1px inset #4d4d4d;
+}
+</style>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script type="text/javascript">
+jQuery( document ).ready(function () {
+    jQuery('#grafico').highcharts({
+        title: {
+            text: 'Representación de las series',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Series contenidas en la base de datos',
+            x: -20
+        },
+        xAxis: {
+            categories: []
+        },
+        yAxis: {
+            title: {
+                text: 'Valor'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: ''
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: $:series      
+    });
+});
+</script>
+</head>
+<body>
+<header class="col-xs-12">
+<h1 >Representación de series en gráfico</h1>
+</header>
+<div class="container">
+
+<form role="form" class ="col-xs-6" name="main" method="post">
+<div class="form-groups ">
+$if not form.valid: <p class="error">Inténtelo de nuevo</p>
+$:form.render()
+<input class="button-default form-control" type="submit" />    
+</div>
+</form>
+<div id="grafico" class="col-xs-11 center-block" ></div>
+</div>
+</body>
+</html>

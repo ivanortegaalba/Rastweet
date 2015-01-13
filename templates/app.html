@@ -1,0 +1,205 @@
+$def with (form,direccion,tweets,series)
+<!DOCTYPE link PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+		
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+		
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		
+		<style>
+			header{
+				background-color: #007FFF;
+				margin-bottom:20px;
+				color:white;
+				padding: 10px;
+			}
+			form * {
+				margin: 5px;
+			}
+			form{
+			border: 1px inset #4d4d4d;
+			padding: 10px;
+			}
+			.error, .wrong{
+				color: red;
+			}
+			#map-canvas {
+			        height: 100%;
+			        margin: 0px;
+			        padding: 0px
+		}
+		</style>
+		<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB4_8JwKM_0AkAM0YJouBBg0wYhWs8dHpY&sensor=false"></script>
+		<script>
+			var map;
+			function initialize() {
+			  var mapOptions = {
+			    zoom: 8,
+			    center: new google.maps.LatLng($direccion)
+			  };
+			  map1 = new google.maps.Map(document.getElementById('map-canvas'),
+			      mapOptions);
+		
+				$for tweet in tweets :
+					var myLatlng = new google.maps.LatLng( $tweet['coordenadasCiudadUsuario'][0],$tweet['coordenadasCiudadUsuario'][1] );
+					var marker = new google.maps.Marker({
+						position: myLatlng,
+						map: map1,
+						title:""		
+						});
+				}
+			
+			google.maps.event.addDomListener(window, 'load', initialize);
+		
+		    </script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+		<script src="http://code.highcharts.com/modules/exporting.js"></script>
+		
+		<!--  SCRIPT PARA GRAFICO -->
+		<script type="text/javascript">
+		jQuery( document ).ready(function () {
+		    jQuery('#grafico').highcharts({
+		        title: {
+		            text: 'Seguimiento de tweets por ciudades',
+		            x: -20 //center
+		        },
+		        subtitle: {
+		            text: 'Numero de tweets por ciudad',
+		            x: -20
+		        },
+		        chart: {
+		            type: 'pie',
+		            options3d: {
+		                enabled: true,
+		                alpha: 45
+		            }
+		        },
+		        plotOptions: {
+		            pie: {
+		                innerSize: 100,
+		                depth: 45
+		            }
+		        },
+		        tooltip: {
+		            valueSuffix: ''
+		        },
+		        legend: {
+		            layout: 'vertical',
+		            align: 'left',
+		            verticalAlign: 'middle',
+		            borderWidth: 0
+		        },
+		        series: [{
+		            name: 'Delivered amount',
+		            data: [ 
+					$for s in series:
+						[" $s[0] ",$s[1]],
+		    ]}]});
+		});
+		</script>
+		
+		
+		<!--  SCRIPT PARA CAMBIO DE BOTONES -->
+		<script type="text/javascript">
+		function cambiarBoton(){
+			jQuery('.button-default').attr('value', 'Cargando tweets...')
+		}
+		function cambiarBoton2(){
+			jQuery('.button-success').attr('value', 'Refrescando...')
+		}
+		</script>
+		
+		<!--  SCRIPT PARA AJAX -->
+		<script type="text/javascript">
+		jQuery(document).ready(function() {
+			jQuery(".button-success").click(function() {
+				var contenido = $$("input#contenido").val();
+				jQuery.ajax({
+					type: "GET",
+					data: {contenido : contenido},
+		            url: "http://localhost:8080/ajax",
+					success: function(data) {
+						datos = JSON.parse(data);
+						console.log(datos)
+						for (i = 0; i < datos.length; i++) { 
+							datos[i]
+						}
+						jQuery('#grafico').highcharts({
+					        title: {
+					            text: 'Seguimiento de tweets por ciudades',
+					            x: -20 //center
+					        },
+					        subtitle: {
+					            text: 'Numero de tweets por ciudad',
+					            x: -20
+					        },
+					        chart: {
+					            type: 'pie',
+					            options3d: {
+					                enabled: true,
+					                alpha: 45
+					            }
+					        },
+					        plotOptions: {
+					            pie: {
+					                innerSize: 100,
+					                depth: 45
+					            }
+					        },
+					        tooltip: {
+					            valueSuffix: ''
+					        },
+					        legend: {
+					            layout: 'vertical',
+					            align: 'left',
+					            verticalAlign: 'middle',
+					            borderWidth: 0
+					        },
+					        series: [{
+					            name: 'Tweets',
+					            data: datos
+								
+					    }]});
+						},
+					});
+				return false;
+				});
+			});
+		 
+		</script>
+	</head>
+	<body>
+		<header class="col-xs-12">
+		<h1 >Mapshup</h1>
+		<h3> Busqueda de tweets en una localización sobre un tema concreto</h3>
+		</header>
+		<div class="container">
+		
+		<!--  CUERPO DE PLANTILLA -->
+		<form role="form" class ="col-xs-6" name="main" method="post">
+			<div class="form-groups">
+				$if not form.valid: <p class="error">Inténtelo de nuevo</p>
+				$:form.render()
+				<input id ="botonEnviar" class="button-default form-control" type="submit" onClick="cambiarBoton()" />
+			</div>
+		</form>
+		<div id="map-canvas" class="col-xs-12"></div>
+		</div>
+		<div id="grafico" class="col-xs-11 center-block" ></div>
+		
+		<div class="form-groups ">
+		<input id ="refrescar" class="button-success form-control" type="submit" onClick="cambiarBoton2()" value="Refrescar" />    
+		</div>
+		</form>
+	</body>
+</html>
